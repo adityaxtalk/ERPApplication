@@ -1,5 +1,7 @@
 
 using ERPApplication.Data;
+using ERPApplication.Helper;
+using ERPApplication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,10 +23,10 @@ namespace ERPApplication
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-
+            builder.Services.AddScoped<JwtHelper>();
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;
@@ -44,7 +46,7 @@ namespace ERPApplication
                     ValidateIssuer = true,
                     ValidateAudience = false,
                     ValidateLifetime = true,
-                    ValidIssuer = builder.Configuration["Jwt:Isuer"],
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
                 };
             });
@@ -54,6 +56,8 @@ namespace ERPApplication
                 options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("SuperAdminPolicy", policy => policy.RequireRole("SuperAdmin"));
                 options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
+                options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher"));
+                options.AddPolicy("StudentPolicy", policy => policy.RequireRole("Student"));
             });
 
 
