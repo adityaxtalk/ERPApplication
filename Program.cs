@@ -1,6 +1,7 @@
 
 using ERPApplication.Data;
 using ERPApplication.Helper;
+using ERPApplication.Middleware;
 using ERPApplication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -65,7 +66,8 @@ namespace ERPApplication
             builder.Logging.AddConsole();
 
             var app = builder.Build();
-            
+
+            app.UseMiddleware<RequestLoggingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
